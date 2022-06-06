@@ -166,7 +166,11 @@ def _linux_linked(filename: str) -> list[str]:
         if match is None:
             if line == 'statically linked':
                 continue
-            elif line.startswith(('linux-vdso.so.1 ', '/lib/ld-linux-')):
+            elif line.startswith((
+                    'linux-vdso.so.1 ',
+                    '/lib/ld-linux-',
+                    '/lib64/ld-linux-',
+            )):
                 continue
             else:
                 raise AssertionError(f'unexpected ldd line:\n\n{line}')

@@ -95,6 +95,7 @@ def test_linux_linked_unit(patched_libc6_links):
 \tlibz.so.1 => /lib/aarch64-linux-gnu/libz.so.1 (0x0000ffff9ec00000)
 \tlibc.so.6 => /lib/aarch64-linux-gnu/libc.so.6 (0x0000ffff9ea50000)
 \t/lib/ld-linux-aarch64.so.1 (0x0000ffff9f2ed000)
+\t/lib64/ld-linux-aarch64.so.1 (0x0000ffff9f2ed000)
 '''
     with mock.patch.object(subprocess, 'check_output', return_value=out):
         ret = build_binary._linux_linked('/some/file.so')
