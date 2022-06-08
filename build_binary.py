@@ -192,22 +192,27 @@ def _linux_archive_name(version: Version) -> str:
     return f'python-{version.s}-manylinux_{libc}_{platform.machine()}.tgz'
 
 
-BREW = '/opt/homebrew/bin/brew'
-BREW_PKG_CONFIG = '/opt/homebrew/bin/pkg-config'
 BREW_SSL = 'openssl@1.1'
 BREW_LIBS = ('ncurses', 'sqlite', 'xz')
 
 
+def _brew() -> str:
+    if platform.machine() == 'arm64':
+        return '/opt/homebrew/bin/brew'
+    else:
+        return '/usr/local/bin/brew'
+
+
 def _darwin_setup_deps(version: Version) -> int:
-    if not os.access(BREW, os.X_OK):
+    if not os.access(_brew(), os.X_OK):
         raise NotImplementedError('setup brew')
 
     pkgs = ('pkg-config', BREW_SSL, *BREW_LIBS)
-    return subprocess.call((BREW, 'install', '-q', *pkgs))
+    return subprocess.call((_brew(), 'install', '-q', *pkgs))
 
 
 def _brew_paths(*pkgs: str) -> dict[str, str]:
-    cmd = (BREW, '--prefix', *pkgs)
+    cmd = (_brew(), '--prefix', *pkgs)
     paths = subprocess.check_output(cmd).decode().splitlines()
     return dict(zip(pkgs, paths))
 
