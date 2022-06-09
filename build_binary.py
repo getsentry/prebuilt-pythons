@@ -53,78 +53,30 @@ PYTHONS = {
 }
 
 
-IMAGE_NAME = f'build-binary-{platform.machine()}'
-DOCKERFILE = f'''\
-FROM quay.io/pypa/manylinux_2_24_{platform.machine()}
-RUN : \
-    && apt-get update \
-    && DEBIAN_FRONTEND=noninteractive apt-get install \
-        -y --no-install-recommends \
-        libbz2-dev \
-        libdb-dev \
-        libexpat1-dev \
-        libffi-dev \
-        libgdbm-dev \
-        liblzma-dev \
-        libncursesw5-dev \
-        libreadline-dev \
-        libsqlite3-dev \
-        libssl-dev \
-        patchelf \
-        uuid-dev \
-        xz-utils \
-        zlib1g-dev \
-    && rm -rf /var/lib/apt/lists/*
-'''
+IMAGE_NAME = f'ghcr.io/getsentry/prebuilt-pythons-manylinux-{platform.machine()}-ci'  # noqa: E501
 
 
-class ContainerOpts(NamedTuple):
-    build: tuple[str, ...]
-    run: tuple[str, ...]
-
-    @classmethod
-    def for_platform(cls) -> ContainerOpts:
-        if shutil.which('podman'):
-            return ContainerOpts(
-                build=('podman', 'build'),
-                run=('podman', 'run'),
-            )
-        else:
-            return ContainerOpts(
-                build=('docker', 'build'),
-                run=(
-                    'docker', 'run',
-                    '--user', f'{os.getuid()}:{os.getgid()}',
-                ),
-            )
+def _docker_run() -> tuple[str, ...]:
+    if shutil.which('podman'):
+        return ('podman', 'run')
+    else:
+        return ('docker', 'run', '--user', f'{os.getuid()}:{os.getgid()}')
 
 
 def _linux_setup_deps(version: Version) -> int:
-    # already built and exec'd our container
+    # already exec'd our container
     if os.environ.get('BUILD_BINARY_IN_CONTAINER'):
         return 0
 
-    container = ContainerOpts.for_platform()
-
-    print('building image...')
-    build_ret = subprocess.run(
-        (*container.build, '--quiet', '--tag', IMAGE_NAME, '-'),
-        input=DOCKERFILE.encode(),
-        capture_output=True,
-    )
-    if build_ret.returncode:
-        return 1
-
     print('execing into container...')
     cmd = (
-        *container.run,
+        *_docker_run(),
+        '--pull=always',
         '--rm',
         '--volume', f'{os.path.abspath("dist")}:/dist:rw',
         # TODO: if we target 3.9+: __file__ is an abspath
         '--volume', f'{os.path.abspath(__file__)}:/{os.path.basename(__file__)}',  # noqa: E501
         '--workdir', '/',
-        # we use this marker to know if we're in the container
-        '--env', 'BUILD_BINARY_IN_CONTAINER=1',
         IMAGE_NAME,
         # match minimum target for this script (macos python3 is 3.8)
         '/opt/python/cp38-cp38/bin/python', '-um', 'build_binary',

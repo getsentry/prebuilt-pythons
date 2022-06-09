@@ -10,7 +10,6 @@ from unittest import mock
 import pytest
 
 import build_binary
-from build_binary import ContainerOpts
 from build_binary import Version
 
 
@@ -26,20 +25,17 @@ def test_version_s():
     assert Version(3, 10, 1).s == '3.10.1'
 
 
-def test_container_opts_podman():
+def test_docker_run_podman():
     with mock.patch.object(shutil, 'which', return_value='/usr/bin/podman'):
-        ret = ContainerOpts.for_platform()
-    assert ret.build == ('podman', 'build')
-    assert ret.run == ('podman', 'run')
+        assert build_binary._docker_run() == ('podman', 'run')
 
 
-def test_container_opts_docker():
+def test_docker_run_docker():
     with mock.patch.object(shutil, 'which', return_value=None):
         with mock.patch.object(os, 'getuid', return_value=1000):
             with mock.patch.object(os, 'getgid', return_value=1000):
-                ret = ContainerOpts.for_platform()
-    assert ret.build == ('docker', 'build')
-    assert ret.run == ('docker', 'run', '--user', '1000:1000')
+                ret = build_binary._docker_run()
+    assert ret == ('docker', 'run', '--user', '1000:1000')
 
 
 def test_linux_configure_args():
