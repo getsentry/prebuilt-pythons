@@ -19,4 +19,4 @@ RUN : \
         xz-utils \
         zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
-ENV BUILD_BINARY_IN_CONTAINER=1
+ENV BUILD_BINARY_IN_CONTAINER=1 PATH=/opt/python/cp38-cp38/bin:$PATH
