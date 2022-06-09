@@ -12,8 +12,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
-    - run: python3 -m build_binary 3.8.13
-    - run: python3 -m validate
+    - run: python3 -um build_binary 3.8.13
+    - run: python3 -um validate
     - uses: actions/upload-artifact@v3
       with:
         name: dist-${{ matrix.os }}

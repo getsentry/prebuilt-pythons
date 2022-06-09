@@ -1,0 +1,12 @@
+task:
+  matrix:
+  - name: macos arm64
+    macos_instance:
+      image: ghcr.io/cirruslabs/macos-monterey-base:latest
+  - name: linux arm64
+    arm_container:
+      image: ghcr.io/getsentry/prebuilt-pythons-manylinux-aarch64-ci
+  build_script: python3 -um build_binary 3.8.13
+  validate_script: python3 -um validate
+  artifacts:
+    path: dist/*

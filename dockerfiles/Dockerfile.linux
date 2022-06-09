@@ -19,4 +19,5 @@ RUN : \
         xz-utils \
         zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
+# match minimum target for this script (macos python3 is 3.8)
 ENV BUILD_BINARY_IN_CONTAINER=1 PATH=/opt/python/cp38-cp38/bin:$PATH

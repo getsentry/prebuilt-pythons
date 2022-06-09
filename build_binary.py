@@ -78,8 +78,7 @@ def _linux_setup_deps(version: Version) -> int:
         '--volume', f'{os.path.abspath(__file__)}:/{os.path.basename(__file__)}',  # noqa: E501
         '--workdir', '/',
         IMAGE_NAME,
-        # match minimum target for this script (macos python3 is 3.8)
-        '/opt/python/cp38-cp38/bin/python', '-um', 'build_binary',
+        'python3', '-um', 'build_binary',
         version.s,
     )
     os.execvp(cmd[0], cmd)
