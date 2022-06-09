@@ -16,5 +16,32 @@ jobs:
     - run: python3 -m validate
     - uses: actions/upload-artifact@v3
       with:
-        name: dist-${{ matrix.os }}
+        name: dist-${{ matrix.os }}-x86_64
+        path: dist/*
+  build-linux-aarch64:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: enable cross build
+      run: docker run --rm --privileged tonistiigi/binfmt --install arm64
+    - run: |
+        docker run \
+          --pull=always \
+          --rm \
+          --volume "$PWD/dist:/dist:rw" \
+          --volume "$PWD/build_binary.py:/build_binary.py:ro" \
+          --workdir / \
+          ghcr.io/getsentry/prebuilt-pythons-manylinux-aarch64-ci \
+          python3 -um build_binary 3.8.13
+    - run: |
+        docker run \
+          --rm \
+          --volume "$PWD/dist:/dist:ro" \
+          --volume "$PWD/validate.py:/vadliate.py:ro" \
+          --workdir / \
+          ghcr.io/getsentry/prebuilt-pythons-manylinux-aarch64-ci \
+          python3 -um validate
+    - uses: actions/upload-artifact@v3
+      with:
+        name: dist-${{ matrix.os }}-aarch64
         path: dist/*
