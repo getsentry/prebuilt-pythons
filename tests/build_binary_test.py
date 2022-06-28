@@ -205,12 +205,31 @@ def test_darwin_linked_unit_self_linked(tmp_path, openssl_dir):
 
 
 def test_darwin_archive_name():
+    mac_ver = ('10.15', ('', '', ''), 'x86_64')
+    with mock.patch.object(platform, 'mac_ver', return_value=mac_ver):
+        with mock.patch.object(platform, 'machine', return_value='x86_64'):
+            ret = build_binary._darwin_archive_name(Version(3, 9, 11))
+
+    assert ret == 'python-3.9.11-macosx_10_15_x86_64.tgz'
+
+
+def test_darwin_archive_name_newer_than_11():
+    # compatibility version for macos>=11 is now major version only
     mac_ver = ('12.4', ('', '', ''), 'arm64')
     with mock.patch.object(platform, 'mac_ver', return_value=mac_ver):
         with mock.patch.object(platform, 'machine', return_value='arm64'):
             ret = build_binary._darwin_archive_name(Version(3, 9, 11))
 
-    assert ret == 'python-3.9.11-macosx_12_4_arm64.tgz'
+    assert ret == 'python-3.9.11-macosx_12_0_arm64.tgz'
+
+
+def test_darwin_archive_name_three_part_version():
+    mac_ver = ('11.6.6', ('', '', ''), 'x86_64')
+    with mock.patch.object(platform, 'mac_ver', return_value=mac_ver):
+        with mock.patch.object(platform, 'machine', return_value='x86_64'):
+            ret = build_binary._darwin_archive_name(Version(3, 9, 11))
+
+    assert ret == 'python-3.9.11-macosx_11_0_x86_64.tgz'
 
 
 def test_sanitize_environ():
