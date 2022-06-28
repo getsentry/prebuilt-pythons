@@ -244,7 +244,10 @@ def _darwin_relink(filename: str, libdir: str, *, set_name: bool) -> None:
 def _darwin_archive_name(version: Version) -> str:
     # TODO: once on 3.9+ we can target lower mac versions (weak linking)
     macos, _, _ = platform.mac_ver()
-    macos = macos.replace('.', '_')
+    major, minor, *_ = macos.split('.')
+    if int(major) >= 11:
+        minor = '0'
+    macos = f'{major}_{minor}'
     return f'python-{version.s}-macosx_{macos}_{platform.machine()}.tgz'
 
 
