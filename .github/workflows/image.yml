@@ -1,10 +1,10 @@
 name: image
 on:
   pull_request:
-    paths: [dockerfiles/Dockerfile.linux]
+    paths: [docker/*, .github/workflows/image.yml]
   push:
     branches: [main, test-me-*]
-    paths: [dockerfiles/Dockerfile.linux]
+    paths: [docker/*, .github/workflows/image.yml]
 
 jobs:
   image:
@@ -28,8 +28,8 @@ jobs:
         docker build \
             "${args[@]}" \
             --build-arg ARCH=${{ matrix.arch }} \
-            -f dockerfiles/Dockerfile.linux \
-            -t "${TARGET_TAG}:${GITHUB_SHA}" .
+            --tag "${TARGET_TAG}:${GITHUB_SHA}" \
+            docker
         docker tag "${TARGET_TAG}:${GITHUB_SHA}" "${TARGET_TAG}:latest"
     - name: push
       run: |
