@@ -124,16 +124,13 @@ def test_brew_paths():
 '''
     with mock.patch.object(subprocess, 'check_output', return_value=out):
         ret = build_binary._brew_paths('openssl@1.1', 'xz')
-    assert ret == {
-        'openssl@1.1': '/opt/homebrew/opt/openssl@1.1',
-        'xz': '/opt/homebrew/opt/xz',
-    }
+    assert ret == ['/opt/homebrew/opt/openssl@1.1', '/opt/homebrew/opt/xz']
 
 
 @pytest.fixture
 def fake_brew_paths():
-    def _brew_paths(*pkgs: str) -> dict[str, str]:
-        return {pkg: f'/opt/homebrew/opt/{pkg}' for pkg in pkgs}
+    def _brew_paths(*pkgs: str) -> list[str]:
+        return [f'/opt/homebrew/opt/{pkg}' for pkg in pkgs]
     with mock.patch.object(build_binary, '_brew_paths', _brew_paths):
         yield
 
