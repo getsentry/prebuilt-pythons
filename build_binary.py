@@ -170,22 +170,21 @@ def _darwin_setup_deps(version: Version) -> int:
     return subprocess.call((_brew(), 'install', '-q', *pkgs))
 
 
-def _brew_paths(*pkgs: str) -> dict[str, str]:
+def _brew_paths(*pkgs: str) -> list[str]:
     cmd = (_brew(), '--prefix', *pkgs)
-    paths = subprocess.check_output(cmd).decode().splitlines()
-    return dict(zip(pkgs, paths))
+    return subprocess.check_output(cmd).decode().splitlines()
 
 
 def _darwin_configure_args() -> tuple[str, ...]:
-    by_lib = _brew_paths(BREW_SSL)
-    return (f'--with-openssl={by_lib[BREW_SSL]}',)
+    ssl_path, = _brew_paths(BREW_SSL)
+    return (f'--with-openssl={ssl_path}',)
 
 
 def _darwin_modify_env(environ: MutableMapping[str, str]) -> None:
-    by_lib = _brew_paths(*BREW_LIBS)
+    brew_paths = _brew_paths(*BREW_LIBS)
 
     def _paths(*parts: str) -> list[str]:
-        return [os.path.join(path, *parts) for path in by_lib.values()]
+        return [os.path.join(path, *parts) for path in brew_paths]
 
     environ['CPPFLAGS'] = ' '.join(f'-I{path}' for path in _paths('include'))
     environ['LDFLAGS'] = ' '.join(f'-L{path}' for path in _paths('lib'))
