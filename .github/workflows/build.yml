@@ -18,3 +18,37 @@ jobs:
       with:
         name: dist-${{ matrix.os }}
         path: dist/*
+
+  cirrus:
+    strategy:
+      matrix:
+        job: ['linux arm64', 'macos arm64']
+    runs-on: ubuntu-latest
+    permissions:
+      checks: read
+      contents: read
+    steps:
+    - uses: actions/checkout@v3
+    - run: |
+        bin/download-cirrus-artifacts \
+          --repo "$GITHUB_REPOSITORY" \
+          --commit "$GH_COMMIT" \
+          --check-name "$CIRRUS_JOB_NAME"
+      env:
+        CIRRUS_JOB_NAME: ${{ matrix.job }}
+        GH_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PYTHONUNBUFFERED: 1
+    - uses: actions/upload-artifact@v3
+      with:
+        name: dist-${{ matrix.job }}
+        path: dist/*
+
+  collect:
+    needs: [build, cirrus]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/download-artifact@v3
+      with:
+        path: dist
+    - run: ls -al dist
