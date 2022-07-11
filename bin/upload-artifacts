@@ -1,0 +1,59 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import argparse
+import collections
+import hashlib
+import os.path
+import shlex
+import shutil
+import subprocess
+import sys
+import tempfile
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--dry-run', action='store_true')
+    parser.add_argument('--dist', default='dist')
+    args = parser.parse_args()
+
+    by_version = collections.defaultdict(list)
+    for root, _, fnames in os.walk(args.dist):
+        for fname in fnames:
+            _, version, _ = fname.split('-')
+            by_version[version].append(os.path.join(root, fname))
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        for version, names in by_version.items():
+            if len(names) != 4:
+                raise SystemExit(f'expected 4 files for {version}: {names}')
+
+            for name in names:
+                shutil.copy(name, tmpdir)
+
+            checksums = os.path.join(tmpdir, f'python-{version}.sha256sums')
+            with open(checksums, 'w') as checksums_f:
+                for name in sorted(os.path.basename(name) for name in names):
+                    with open(os.path.join(tmpdir, name), 'rb') as tgz:
+                        checksum = hashlib.sha256(tgz.read()).hexdigest()
+                    for f in (sys.stdout, checksums_f):
+                        print(f'{checksum}  {os.path.basename(name)}', file=f)
+
+        cmd = (
+            'gsutil',
+            '-m',  # parallel
+            'cp',
+            '-n',  # no-clobber
+            os.path.join(tmpdir, '*'),  # so the tmpdir name isn't uploaded
+            'gs://sentry-dev-infra-assets/prebuilt-pythons/',
+        )
+        if args.dry_run:
+            print(f'would run `{shlex.join(cmd)}`')
+            return 0
+        else:
+            return subprocess.call(cmd)
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())
