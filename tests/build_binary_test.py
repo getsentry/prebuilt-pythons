@@ -64,6 +64,12 @@ def test_already_built_exists():
         assert build_binary.already_built(filename) is True
 
 
+def test_archive_name():
+    version = Version(3, 9, 11)
+    archive = build_binary._archive_name(version, 2, 'macosx_10_15_x86_64')
+    assert archive == 'python-3.9.11+2-macosx_10_15_x86_64.tgz'
+
+
 def test_docker_run_podman():
     with mock.patch.object(shutil, 'which', return_value='/usr/bin/podman'):
         assert build_binary._docker_run() == ('podman', 'run')
@@ -147,13 +153,13 @@ def test_linux_linked_unit_static_linked(patched_libc6_links):
     assert ret == []
 
 
-def test_linux_archive_name():
+def test_linux_platform_name():
     libc_ret = ('glibc', '2.35')
     with mock.patch.object(platform, 'libc_ver', return_value=libc_ret):
         with mock.patch.object(platform, 'machine', return_value='x86_64'):
-            ret = build_binary._linux_archive_name(Version(3, 10, 1))
+            ret = build_binary._linux_platform_name()
 
-    assert ret == 'python-3.10.1-manylinux_2_35_x86_64.tgz'
+    assert ret == 'manylinux_2_35_x86_64'
 
 
 def test_brew_paths():
@@ -240,32 +246,32 @@ def test_darwin_linked_unit_self_linked(tmp_path, openssl_dir):
     assert ret == [libcrypto]
 
 
-def test_darwin_archive_name():
+def test_darwin_platform_name():
     mac_ver = ('10.15', ('', '', ''), 'x86_64')
     with mock.patch.object(platform, 'mac_ver', return_value=mac_ver):
         with mock.patch.object(platform, 'machine', return_value='x86_64'):
-            ret = build_binary._darwin_archive_name(Version(3, 9, 11))
+            ret = build_binary._darwin_platform_name()
 
-    assert ret == 'python-3.9.11-macosx_10_15_x86_64.tgz'
+    assert ret == 'macosx_10_15_x86_64'
 
 
-def test_darwin_archive_name_newer_than_11():
+def test_darwin_platform_name_newer_than_11():
     # compatibility version for macos>=11 is now major version only
     mac_ver = ('12.4', ('', '', ''), 'arm64')
     with mock.patch.object(platform, 'mac_ver', return_value=mac_ver):
         with mock.patch.object(platform, 'machine', return_value='arm64'):
-            ret = build_binary._darwin_archive_name(Version(3, 9, 11))
+            ret = build_binary._darwin_platform_name()
 
-    assert ret == 'python-3.9.11-macosx_12_0_arm64.tgz'
+    assert ret == 'macosx_12_0_arm64'
 
 
-def test_darwin_archive_name_three_part_version():
+def test_darwin_platform_name_three_part_version():
     mac_ver = ('11.6.6', ('', '', ''), 'x86_64')
     with mock.patch.object(platform, 'mac_ver', return_value=mac_ver):
         with mock.patch.object(platform, 'machine', return_value='x86_64'):
-            ret = build_binary._darwin_archive_name(Version(3, 9, 11))
+            ret = build_binary._darwin_platform_name()
 
-    assert ret == 'python-3.9.11-macosx_11_0_x86_64.tgz'
+    assert ret == 'macosx_11_0_x86_64'
 
 
 def test_sanitize_environ():
