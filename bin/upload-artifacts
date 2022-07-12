@@ -24,6 +24,10 @@ def main() -> int:
             _, version, _ = fname.split('-')
             by_version[version].append(os.path.join(root, fname))
 
+    if not by_version:
+        print('SKIP: nothing to upload')
+        return 0
+
     with tempfile.TemporaryDirectory() as tmpdir:
         for version, names in by_version.items():
             if len(names) != 4:
