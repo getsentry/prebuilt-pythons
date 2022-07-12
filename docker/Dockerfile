@@ -1,5 +1,4 @@
-ARG ARCH
-FROM quay.io/pypa/manylinux_2_24_${ARCH}
+FROM ubuntu:18.04
 RUN : \
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install \
@@ -15,9 +14,12 @@ RUN : \
         libsqlite3-dev \
         libssl-dev \
         patchelf \
+        python3.8-distutils \
+        python3.8-venv \
         uuid-dev \
         xz-utils \
         zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
 # match minimum target for this script (macos python3 is 3.8)
-ENV BUILD_BINARY_IN_CONTAINER=1 PATH=/opt/python/cp38-cp38/bin:$PATH
+RUN python3.8 -m venv /venv
+ENV BUILD_BINARY_IN_CONTAINER=1 PATH=/venv/bin:$PATH
