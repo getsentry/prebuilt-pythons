@@ -44,6 +44,10 @@ def main() -> int:
     parser.add_argument('--dist-dir', default='dist')
     args = parser.parse_args()
 
+    if not os.path.exists(args.dist_dir) or not os.listdir(args.dist_dir):
+        print('SKIP: no file to validate')
+        return 0
+
     filename, = os.listdir(args.dist_dir)
     filename = os.path.join(args.dist_dir, filename)
 
