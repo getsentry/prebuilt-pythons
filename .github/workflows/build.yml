@@ -11,8 +11,10 @@ jobs:
         include:
         - {os: macos-latest, py: 3.8.13, build: 0}
         - {os: macos-latest, py: 3.9.13, build: 0}
+        - {os: macos-latest, py: 3.10.5, build: 0}
         - {os: ubuntu-latest, py: 3.8.13, build: 0}
         - {os: ubuntu-latest, py: 3.9.13, build: 0}
+        - {os: ubuntu-latest, py: 3.10.5, build: 0}
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
@@ -27,7 +29,7 @@ jobs:
     strategy:
       matrix:
         os: [darwin, linux]
-        py: [3.8.13, 3.9.13]
+        py: [3.8.13, 3.9.13, 3.10.5]
     runs-on: ubuntu-latest
     permissions:
       checks: read

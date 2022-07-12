@@ -8,6 +8,7 @@ task:
     matrix:
     - {PY: 3.8.13, BUILD: '0'}
     - {PY: 3.9.13, BUILD: '0'}
+    - {PY: 3.10.5, BUILD: '0'}
   name: ${CIRRUS_OS}-${PY}-arm64
   build_script: python3 -um build_binary $PY --build $BUILD
   validate_script: python3 -um validate
