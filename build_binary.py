@@ -81,7 +81,8 @@ def _archive_name(version: Version, build: int, platform: str) -> str:
     return f'python-{version.s}+{build}-{platform}.tgz'
 
 
-IMAGE_NAME = f'ghcr.io/getsentry/prebuilt-pythons-manylinux-{platform.machine()}-ci'  # noqa: E501
+PLAT_MAP = {'x86_64': 'amd64', 'aarch64': 'arm64', 'arm64': 'arm64'}
+IMAGE_NAME = f'ghcr.io/getsentry/prebuilt-pythons-manylinux-{PLAT_MAP[platform.machine()]}-ci'  # noqa: E501
 
 
 def _docker_run() -> tuple[str, ...]:
