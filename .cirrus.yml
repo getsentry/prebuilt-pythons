@@ -1,7 +1,7 @@
 task:
   matrix:
   - arm_container:
-      image: ghcr.io/getsentry/prebuilt-pythons-manylinux-aarch64-ci
+      image: ghcr.io/getsentry/prebuilt-pythons-manylinux-arm64-ci
   - macos_instance:
       image: ghcr.io/cirruslabs/macos-monterey-base:latest
   env:
