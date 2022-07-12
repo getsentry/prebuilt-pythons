@@ -8,21 +8,26 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        include:
+        - {os: macos-latest, py: 3.8.13, build: 0}
+        - {os: macos-latest, py: 3.9.13, build: 0}
+        - {os: ubuntu-latest, py: 3.8.13, build: 0}
+        - {os: ubuntu-latest, py: 3.9.13, build: 0}
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
-    - run: python3 -um build_binary 3.8.13
+    - run: python3 -um build_binary ${{ matrix.py }} --build ${{ matrix.build }}
     - run: python3 -um validate
     - uses: actions/upload-artifact@v3
       with:
-        name: dist-${{ matrix.os }}
+        name: dist-${{ matrix.os }}-${{ matrix.py }}
         path: dist/*
 
   cirrus:
     strategy:
       matrix:
-        job: ['linux arm64', 'macos arm64']
+        os: [darwin, linux]
+        py: [3.8.13, 3.9.13]
     runs-on: ubuntu-latest
     permissions:
       checks: read
@@ -35,13 +40,13 @@ jobs:
           --commit "$GH_COMMIT" \
           --check-name "$CIRRUS_JOB_NAME"
       env:
-        CIRRUS_JOB_NAME: ${{ matrix.job }}
+        CIRRUS_JOB_NAME: ${{ matrix.os }}-${{ matrix.py }}-arm64
         GH_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         PYTHONUNBUFFERED: 1
     - uses: actions/upload-artifact@v3
       with:
-        name: dist-${{ matrix.job }}
+        name: dist-${{ matrix.os }}-${{ matrix.py }}-arm64
         path: dist/*
 
   collect-and-deploy:

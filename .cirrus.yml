@@ -1,12 +1,15 @@
 task:
   matrix:
-  - name: macos arm64
-    macos_instance:
-      image: ghcr.io/cirruslabs/macos-monterey-base:latest
-  - name: linux arm64
-    arm_container:
+  - arm_container:
       image: ghcr.io/getsentry/prebuilt-pythons-manylinux-aarch64-ci
-  build_script: python3 -um build_binary 3.8.13
+  - macos_instance:
+      image: ghcr.io/cirruslabs/macos-monterey-base:latest
+  env:
+    matrix:
+    - {PY: 3.8.13, BUILD: '0'}
+    - {PY: 3.9.13, BUILD: '0'}
+  name: ${CIRRUS_OS}-${PY}-arm64
+  build_script: python3 -um build_binary $PY --build $BUILD
   validate_script: python3 -um validate
   artifacts:
     path: dist/*

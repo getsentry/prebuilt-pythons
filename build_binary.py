@@ -77,6 +77,10 @@ def already_built(archive_name: str) -> bool:
         return True
 
 
+def _archive_name(version: Version, build: int, platform: str) -> str:
+    return f'python-{version.s}+{build}-{platform}.tgz'
+
+
 IMAGE_NAME = f'ghcr.io/getsentry/prebuilt-pythons-manylinux-{platform.machine()}-ci'  # noqa: E501
 
 
@@ -161,10 +165,10 @@ def _linux_relink(filename: str, libdir: str, *, set_name: bool) -> None:
     subprocess.check_call(cmd)
 
 
-def _linux_archive_name(version: Version) -> str:
+def _linux_platform_name() -> str:
     _, libc = platform.libc_ver()
     libc = libc.replace('.', '_')
-    return f'python-{version.s}-manylinux_{libc}_{platform.machine()}.tgz'
+    return f'manylinux_{libc}_{platform.machine()}'
 
 
 BREW_SSL = 'openssl@1.1'
@@ -256,14 +260,14 @@ def _darwin_relink(filename: str, libdir: str, *, set_name: bool) -> None:
     subprocess.check_call(('codesign', '--force', '--sign', '-', filename))
 
 
-def _darwin_archive_name(version: Version) -> str:
+def _darwin_platform_name() -> str:
     # TODO: once on 3.9+ we can target lower mac versions (weak linking)
     macos, _, _ = platform.mac_ver()
     major, minor, *_ = macos.split('.')
     if int(major) >= 11:
         minor = '0'
     macos = f'{major}_{minor}'
-    return f'python-{version.s}-macosx_{macos}_{platform.machine()}.tgz'
+    return f'macosx_{macos}_{platform.machine()}'
 
 
 class _Relink(Protocol):
@@ -277,7 +281,7 @@ class Platform(NamedTuple):
     modify_env: Callable[[MutableMapping[str, str]], None]
     linked: Callable[[str], list[str]]
     relink: _Relink
-    archive_name: Callable[[Version], str]
+    platform_name: Callable[[], str]
 
 
 plats = {
@@ -287,7 +291,7 @@ plats = {
         modify_env=_linux_modify_env,
         linked=_linux_linked,
         relink=_linux_relink,
-        archive_name=_linux_archive_name,
+        platform_name=_linux_platform_name,
     ),
     'darwin': Platform(
         setup_deps=_darwin_setup_deps,
@@ -295,7 +299,7 @@ plats = {
         modify_env=_darwin_modify_env,
         linked=_darwin_linked,
         relink=_darwin_relink,
-        archive_name=_darwin_archive_name,
+        platform_name=_darwin_platform_name,
     ),
 }
 plat = plats[sys.platform]
@@ -448,6 +452,7 @@ def _archive(src: str, dest: str) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument('version')
+    parser.add_argument('--build', type=int, default=0)
     args = parser.parse_args()
 
     version = Version.parse(args.version)
@@ -458,7 +463,7 @@ def main() -> int:
     plat.setup_deps(version)
     plat.modify_env(os.environ)
 
-    archive_name = plat.archive_name(version)
+    archive_name = _archive_name(version, args.build, plat.platform_name())
     if already_built(archive_name):
         print('already built!')
         return 0
