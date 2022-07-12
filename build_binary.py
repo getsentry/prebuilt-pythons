@@ -61,6 +61,22 @@ PYTHONS = {
 }
 
 
+def already_built(archive_name: str) -> bool:
+    req = urllib.request.Request(
+        f'https://storage.googleapis.com/sentry-dev-infra-assets/prebuilt-pythons/{archive_name}',  # noqa: E501
+        method='HEAD',
+    )
+    try:
+        urllib.request.urlopen(req)
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            return False
+        else:
+            raise
+    else:
+        return True
+
+
 IMAGE_NAME = f'ghcr.io/getsentry/prebuilt-pythons-manylinux-{platform.machine()}-ci'  # noqa: E501
 
 
@@ -442,6 +458,11 @@ def main() -> int:
     plat.setup_deps(version)
     plat.modify_env(os.environ)
 
+    archive_name = plat.archive_name(version)
+    if already_built(archive_name):
+        print('already built!')
+        return 0
+
     with tempfile.TemporaryDirectory() as tmpdir:
         print('downloading...')
         tgz = os.path.join(tmpdir, 'python.tgz')
@@ -463,7 +484,7 @@ def main() -> int:
         _relink(prefix, version)
 
         print('archiving...')
-        archive = os.path.join(tmpdir, plat.archive_name(version))
+        archive = os.path.join(tmpdir, archive_name)
         _archive(prefix, archive)
         shutil.move(archive, 'dist')
 

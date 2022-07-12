@@ -1,10 +1,15 @@
 from __future__ import annotations
 
+import email.message
+import http
+import io
 import os.path
 import platform
 import shutil
 import subprocess
 import sys
+import urllib.error
+import urllib.request
 from unittest import mock
 
 import pytest
@@ -23,6 +28,40 @@ def test_version_py_minor():
 
 def test_version_s():
     assert Version(3, 10, 1).s == '3.10.1'
+
+
+def test_already_built_404():
+    error = urllib.error.HTTPError(
+        'https://example.com',
+        404,
+        http.HTTPStatus(404).phrase,
+        email.message.Message(),
+        io.BytesIO(b''),
+    )
+    filename = 'python-3.8.13-manylinux_2_24_x86_64.tgz'
+    with mock.patch.object(urllib.request, 'urlopen', side_effect=error):
+        assert build_binary.already_built(filename) is False
+
+
+def test_already_built_reraises_unknown_errors():
+    error = urllib.error.HTTPError(
+        'https://example.com',
+        500,
+        http.HTTPStatus(500).phrase,
+        email.message.Message(),
+        io.BytesIO(b''),
+    )
+    filename = 'python-3.8.13-manylinux_2_24_x86_64.tgz'
+    with mock.patch.object(urllib.request, 'urlopen', side_effect=error):
+        with pytest.raises(urllib.error.HTTPError):
+            build_binary.already_built(filename)
+
+
+def test_already_built_exists():
+    resp = io.BytesIO(b'')
+    filename = 'python-3.8.13-manylinux_2_24_x86_64.tgz'
+    with mock.patch.object(urllib.request, 'urlopen', return_value=resp):
+        assert build_binary.already_built(filename) is True
 
 
 def test_docker_run_podman():
