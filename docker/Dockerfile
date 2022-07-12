@@ -3,6 +3,7 @@ RUN : \
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install \
         -y --no-install-recommends \
+        gcc \
         libbz2-dev \
         libdb-dev \
         libexpat1-dev \
@@ -13,6 +14,7 @@ RUN : \
         libreadline-dev \
         libsqlite3-dev \
         libssl-dev \
+        make \
         patchelf \
         python3.8-distutils \
         python3.8-venv \
