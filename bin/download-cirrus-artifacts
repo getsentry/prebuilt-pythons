@@ -61,8 +61,21 @@ def main() -> int:
     print('downloading...')
     cirrus_task_id = check_run['external_id']
     url = f'https://api.cirrus-ci.com/v1/artifact/task/{cirrus_task_id}/binary.zip'  # noqa: E501
-    resp = urllib.request.urlopen(url)
-    bio = io.BytesIO(resp.read())
+
+    for _ in range(5):
+        try:
+            resp = urllib.request.urlopen(url)
+        except urllib.error.HTTPError as e:
+            if e.code == 404:
+                print('=> 404 for artifact... retrying')
+                time.sleep(5)
+            else:
+                raise
+        else:
+            bio = io.BytesIO(resp.read())
+            break
+    else:
+        raise SystemExit('artifact never appeared!')
 
     os.makedirs(args.dest, exist_ok=True)
     with zipfile.ZipFile(bio) as zipf:
