@@ -22,6 +22,7 @@ RUN : \
         libssl-dev \
         libtool \
         make \
+        pkg-config \
         uuid-dev \
         xz-utils \
         zlib1g-dev \
