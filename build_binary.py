@@ -313,8 +313,6 @@ def _sanitize_environ(environ: MutableMapping[str, str]) -> None:
 
     # prevent homebrew from wasting time updating
     environ['HOMEBREW_NO_AUTO_UPDATE'] = '1'
-    # set PATH to a minimal path (avoid homebrew / local installs)
-    environ['PATH'] = '/usr/bin:/bin:/usr/sbin:/sbin'
 
 
 def _download(py: Python, target: str) -> None:

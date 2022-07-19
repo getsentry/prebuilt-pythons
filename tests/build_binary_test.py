@@ -285,7 +285,7 @@ def test_sanitize_environ():
     }
     build_binary._sanitize_environ(env)
     assert env == {
-        'PATH': '/usr/bin:/bin:/usr/sbin:/sbin',
+        'PATH': '/home/asottile/bin:/usr/bin:/bin',
         'HOMEBREW_NO_AUTO_UPDATE': '1',
         'SOME': 'VARIABLE',
     }
