@@ -6,6 +6,7 @@ import subprocess
 import tempfile
 
 MODULES = (
+    '_elementtree',
     '_uuid',
     'bz2',
     'ctypes',
