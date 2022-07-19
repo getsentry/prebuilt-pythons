@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM python:3.8.13-slim-buster
 RUN : \
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install \
@@ -6,6 +6,7 @@ RUN : \
         automake \
         ca-certificates \
         curl \
+        dumb-init \
         gcc \
         git \
         libbz2-dev \
@@ -21,8 +22,6 @@ RUN : \
         libssl-dev \
         libtool \
         make \
-        python3.8-distutils \
-        python3.8-venv \
         uuid-dev \
         xz-utils \
         zlib1g-dev \
@@ -35,7 +34,7 @@ RUN : \
     && cd /tmp/manylinux \
     && git checkout 075550587bb428c01ed2dd31f9b6e0b089d62802 \
     && \
-        AUDITWHEEL_POLICY=manylinux_2_27 \
+        AUDITWHEEL_POLICY= \
         LIBXCRYPT_VERSION=4.4.28 \
         LIBXCRYPT_HASH=db7e37901969cb1d1e8020cb73a991ef81e48e31ea5b76a101862c806426b457 \
         LIBXCRYPT_DOWNLOAD_URL=https://github.com/besser82/libxcrypt/archive \
@@ -45,6 +44,7 @@ RUN : \
 # match minimum target for this script (macos python3 is 3.8)
 RUN : \
     && python3.8 -m venv /venv \
-    && /venv/bin/pip install --no-cache-dir pip==22.1.2 \
     && /venv/bin/pip install --no-cache-dir patchelf==0.14.5.0
 ENV BUILD_BINARY_IN_CONTAINER=1 PATH=/venv/bin:$PATH
+
+ENTRYPOINT ["dumb-init", "--"]
