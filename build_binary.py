@@ -92,7 +92,7 @@ def _docker_run() -> tuple[str, ...]:
         return ('docker', 'run', '--user', f'{os.getuid()}:{os.getgid()}')
 
 
-def _linux_setup_deps(version: Version) -> int:
+def _linux_setup_deps() -> int:
     # already exec'd our container
     if os.environ.get('BUILD_BINARY_IN_CONTAINER'):
         return 0
@@ -108,7 +108,7 @@ def _linux_setup_deps(version: Version) -> int:
         '--workdir', '/',
         IMAGE_NAME,
         'python3', '-um', 'build_binary',
-        version.s,
+        *sys.argv[1:],
     )
     os.execvp(cmd[0], cmd)
 
@@ -183,7 +183,7 @@ def _brew() -> str:
         return '/usr/local/bin/brew'
 
 
-def _darwin_setup_deps(version: Version) -> int:
+def _darwin_setup_deps() -> int:
     if not os.access(_brew(), os.X_OK):
         raise NotImplementedError('setup brew')
 
@@ -277,7 +277,7 @@ class _Relink(Protocol):
 
 
 class Platform(NamedTuple):
-    setup_deps: Callable[[Version], int]
+    setup_deps: Callable[[], int]
     configure_args: Callable[[], tuple[str, ...]]
     modify_env: Callable[[MutableMapping[str, str]], None]
     linked: Callable[[str], list[str]]
@@ -461,7 +461,7 @@ def main() -> int:
 
     os.makedirs('dist', exist_ok=True)
     _sanitize_environ(os.environ)
-    plat.setup_deps(version)
+    plat.setup_deps()
     plat.modify_env(os.environ)
 
     archive_name = _archive_name(version, args.build, plat.platform_name())
