@@ -9,12 +9,12 @@ jobs:
     strategy:
       matrix:
         include:
-        - {os: macos-latest, py: 3.8.13, build: 0}
-        - {os: macos-latest, py: 3.9.13, build: 0}
-        - {os: macos-latest, py: 3.10.5, build: 0}
-        - {os: ubuntu-latest, py: 3.8.13, build: 0}
-        - {os: ubuntu-latest, py: 3.9.13, build: 0}
-        - {os: ubuntu-latest, py: 3.10.5, build: 0}
+        - {os: macos-latest, py: 3.8.13, build: 1}
+        - {os: macos-latest, py: 3.9.13, build: 1}
+        - {os: macos-latest, py: 3.10.5, build: 1}
+        - {os: ubuntu-latest, py: 3.8.13, build: 1}
+        - {os: ubuntu-latest, py: 3.9.13, build: 1}
+        - {os: ubuntu-latest, py: 3.10.5, build: 1}
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
