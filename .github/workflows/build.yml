@@ -26,6 +26,7 @@ jobs:
         path: dist/*
 
   cirrus:
+    if: github.event_name != 'pull_request'
     strategy:
       matrix:
         os: [darwin, linux]
@@ -33,19 +34,11 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       checks: read
-      contents: read
     steps:
-    - uses: actions/checkout@v3
-    - run: |
-        bin/download-cirrus-artifacts \
-          --repo "$GITHUB_REPOSITORY" \
-          --commit "$GH_COMMIT" \
-          --check-name "$CIRRUS_JOB_NAME"
-      env:
-        CIRRUS_JOB_NAME: ${{ matrix.os }}-${{ matrix.py }}-arm64
-        GH_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        PYTHONUNBUFFERED: 1
+    - uses: getsentry/action-wait-for-cirrus@v1.0.0
+      with:
+        task: ${{ matrix.os }}-${{ matrix.py }}-arm64
+      timeout-minutes: 30
     - uses: actions/upload-artifact@v3
       with:
         name: dist-${{ matrix.os }}-${{ matrix.py }}-arm64
