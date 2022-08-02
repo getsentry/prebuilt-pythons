@@ -54,9 +54,9 @@ PYTHONS = {
         url='https://www.python.org/ftp/python/3.9.13/Python-3.9.13.tar.xz',
         sha256='125b0c598f1e15d2aa65406e83f792df7d171cdf38c16803b149994316a3080f',  # noqa: E501
     ),
-    Version(3, 10, 5): Python(
-        url='https://www.python.org/ftp/python/3.10.5/Python-3.10.5.tar.xz',
-        sha256='8437efd5b106ef0a75aabfbf23d880625120a73a86a22ade4d2e2e68d7b74486',  # noqa: E501
+    Version(3, 10, 6): Python(
+        url='https://www.python.org/ftp/python/3.10.6/Python-3.10.6.tar.xz',
+        sha256='f795ff87d11d4b0c7c33bc8851b0c28648d8a4583aa2100a98c22b4326b6d3f3',  # noqa: E501
     ),
 }
 
