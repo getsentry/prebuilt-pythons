@@ -46,17 +46,17 @@ class Python(NamedTuple):
 
 
 PYTHONS = {
-    Version(3, 8, 13): Python(
-        url='https://www.python.org/ftp/python/3.8.13/Python-3.8.13.tar.xz',
-        sha256='6f309077012040aa39fe8f0c61db8c0fa1c45136763299d375c9e5756f09cf57',  # noqa: E501
+    Version(3, 8, 14): Python(
+        url='https://www.python.org/ftp/python/3.8.14/Python-3.8.14.tar.xz',
+        sha256='5d77e278271ba803e9909a41a4f3baca006181c93ada682a5e5fe8dc4a24c5f3',  # noqa: E501
     ),
-    Version(3, 9, 13): Python(
-        url='https://www.python.org/ftp/python/3.9.13/Python-3.9.13.tar.xz',
-        sha256='125b0c598f1e15d2aa65406e83f792df7d171cdf38c16803b149994316a3080f',  # noqa: E501
+    Version(3, 9, 14): Python(
+        url='https://www.python.org/ftp/python/3.9.14/Python-3.9.14.tar.xz',
+        sha256='651304d216c8203fe0adf1a80af472d8e92c3b0e0a7892222ae4d9f3ae4debcf',  # noqa: E501
     ),
-    Version(3, 10, 6): Python(
-        url='https://www.python.org/ftp/python/3.10.6/Python-3.10.6.tar.xz',
-        sha256='f795ff87d11d4b0c7c33bc8851b0c28648d8a4583aa2100a98c22b4326b6d3f3',  # noqa: E501
+    Version(3, 10, 7): Python(
+        url='https://www.python.org/ftp/python/3.10.7/Python-3.10.7.tar.xz',
+        sha256='6eed8415b7516fb2f260906db5d48dd4c06acc0cb24a7d6cc15296a604dcdc48',  # noqa: E501
     ),
 }
 

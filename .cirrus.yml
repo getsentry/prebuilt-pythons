@@ -6,9 +6,9 @@ task:
       image: ghcr.io/cirruslabs/macos-monterey-base:latest
   env:
     matrix:
-    - {PY: 3.8.13, BUILD: '1'}
-    - {PY: 3.9.13, BUILD: '1'}
-    - {PY: 3.10.6, BUILD: '1'}
+    - {PY: 3.8.14, BUILD: '0'}
+    - {PY: 3.9.14, BUILD: '0'}
+    - {PY: 3.10.7, BUILD: '0'}
   name: ${CIRRUS_OS}-${PY}-arm64
   build_script: python3 -um build_binary $PY --build $BUILD
   validate_script: python3 -um validate
