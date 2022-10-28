@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import hashlib
+import html.parser
+import sys
+import urllib.request
+
+
+class GetsAHrefs(html.parser.HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self.hrefs: list[str] = []
+
+    def handle_starttag(
+            self,
+            tag: str,
+            attrs: list[tuple[str, str | None]],
+    ) -> None:
+        if tag == 'a':
+            self.hrefs.append(dict(attrs).get('href') or '')
+
+
+def main() -> int:
+    parser = GetsAHrefs()
+    resp = urllib.request.urlopen('https://www.python.org/ftp/python/')
+    parser.feed(resp.read().decode())
+
+    latest_for_minor = {f'3.{n}': (3, n, 0) for n in range(8, 12)}
+    for link in parser.hrefs:
+        link = link.rstrip('/')
+        for k, v in latest_for_minor.items():
+            if link.startswith(f'{k}.'):
+                major_s, minor_s, patch_s = link.rstrip('/').split('.')
+                cand = (int(major_s), int(minor_s), int(patch_s))
+                if cand > v:
+                    latest_for_minor[k] = cand
+                    break
+
+    print(f'# generated via {sys.argv[0]}')
+    print('PYTHONS = {')
+    for major, minor, patch in latest_for_minor.values():
+        url = f'https://www.python.org/ftp/python/{major}.{minor}.{patch}/Python-{major}.{minor}.{patch}.tar.xz'  # noqa: E501
+        resp = urllib.request.urlopen(url)
+        sha256 = hashlib.sha256(resp.read()).hexdigest()
+
+        print(f'    Version({major}, {minor}, {patch}): Python(')
+        print(f'        url={url!r},')
+        print(f'        sha256={sha256!r},  # noqa: E501')
+        print('    ),')
+    print('}')
+    print('# end generated')
+
+    return 0
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())
