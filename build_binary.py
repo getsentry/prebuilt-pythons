@@ -387,9 +387,13 @@ def _clean(prefix: str, version: Version) -> None:
             ('distutils', 'tests'),
             ('lib2to3', 'tests'),
             ('unittest', 'test'),
-            ('sqlite3', 'test'),
     ):
         shutil.rmtree(os.path.join(prefix, 'lib', version.py_minor, *mod_path))
+
+    if version < (3, 11):
+        shutil.rmtree(
+            os.path.join(prefix, 'lib', version.py_minor, 'sqlite3', 'test'),
+        )
 
     # don't bundle pyc files, they'll all be invalidated after install
     subprocess.check_call(('find', prefix, '-name', '*.pyc', '-delete'))
