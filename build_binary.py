@@ -45,20 +45,26 @@ class Python(NamedTuple):
     sha256: str
 
 
+# generated via bin/gen-pythons
 PYTHONS = {
-    Version(3, 8, 14): Python(
-        url='https://www.python.org/ftp/python/3.8.14/Python-3.8.14.tar.xz',
-        sha256='5d77e278271ba803e9909a41a4f3baca006181c93ada682a5e5fe8dc4a24c5f3',  # noqa: E501
+    Version(3, 8, 15): Python(
+        url='https://www.python.org/ftp/python/3.8.15/Python-3.8.15.tar.xz',
+        sha256='5114fc7918a2a5e20eb5aac696b30c36f412c6ef24b13f5c9eb9e056982d9550',  # noqa: E501
     ),
-    Version(3, 9, 14): Python(
-        url='https://www.python.org/ftp/python/3.9.14/Python-3.9.14.tar.xz',
-        sha256='651304d216c8203fe0adf1a80af472d8e92c3b0e0a7892222ae4d9f3ae4debcf',  # noqa: E501
+    Version(3, 9, 15): Python(
+        url='https://www.python.org/ftp/python/3.9.15/Python-3.9.15.tar.xz',
+        sha256='12daff6809528d9f6154216950423c9e30f0e47336cb57c6aa0b4387dd5eb4b2',  # noqa: E501
     ),
-    Version(3, 10, 7): Python(
-        url='https://www.python.org/ftp/python/3.10.7/Python-3.10.7.tar.xz',
-        sha256='6eed8415b7516fb2f260906db5d48dd4c06acc0cb24a7d6cc15296a604dcdc48',  # noqa: E501
+    Version(3, 10, 8): Python(
+        url='https://www.python.org/ftp/python/3.10.8/Python-3.10.8.tar.xz',
+        sha256='6a30ecde59c47048013eb5a658c9b5dec277203d2793667f578df7671f7f03f3',  # noqa: E501
+    ),
+    Version(3, 11, 0): Python(
+        url='https://www.python.org/ftp/python/3.11.0/Python-3.11.0.tar.xz',
+        sha256='a57dc82d77358617ba65b9841cee1e3b441f386c3789ddc0676eca077f2951c3',  # noqa: E501
     ),
 }
+# end generated
 
 
 def already_built(archive_name: str) -> bool:
@@ -381,9 +387,13 @@ def _clean(prefix: str, version: Version) -> None:
             ('distutils', 'tests'),
             ('lib2to3', 'tests'),
             ('unittest', 'test'),
-            ('sqlite3', 'test'),
     ):
         shutil.rmtree(os.path.join(prefix, 'lib', version.py_minor, *mod_path))
+
+    if version < (3, 11):
+        shutil.rmtree(
+            os.path.join(prefix, 'lib', version.py_minor, 'sqlite3', 'test'),
+        )
 
     # don't bundle pyc files, they'll all be invalidated after install
     subprocess.check_call(('find', prefix, '-name', '*.pyc', '-delete'))
