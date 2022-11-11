@@ -58,5 +58,4 @@ jobs:
     - uses: google-github-actions/auth@v0
       with:
         credentials_json: ${{ secrets.SENTRY_DEV_INFRA_ASSETS_WRITER }}
-    - uses: google-github-actions/setup-gcloud@v0
     - run: bin/upload-artifacts
