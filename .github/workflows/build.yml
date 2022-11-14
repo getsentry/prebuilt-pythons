@@ -58,4 +58,5 @@ jobs:
     - uses: google-github-actions/auth@v0
       with:
         credentials_json: ${{ secrets.SENTRY_DEV_INFRA_ASSETS_WRITER }}
+    - run: yes | gcloud auth login --cred-file="$GOOGLE_APPLICATION_CREDENTIALS"
     - run: bin/upload-artifacts
