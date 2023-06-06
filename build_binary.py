@@ -45,23 +45,23 @@ class Python(NamedTuple):
     sha256: str
 
 
-# generated via bin/gen-pythons
+# generated via ./bin/gen-pythons
 PYTHONS = {
-    Version(3, 8, 16): Python(
-        url='https://www.python.org/ftp/python/3.8.16/Python-3.8.16.tar.xz',
-        sha256='d85dbb3774132473d8081dcb158f34a10ccad7a90b96c7e50ea4bb61f5ce4562',  # noqa: E501
+    Version(3, 8, 17): Python(
+        url='https://www.python.org/ftp/python/3.8.17/Python-3.8.17.tar.xz',
+        sha256='2e54b0c68191f16552f6de2e97a2396540572a219f6bbb28591a137cecc490a9',  # noqa: E501
     ),
-    Version(3, 9, 16): Python(
-        url='https://www.python.org/ftp/python/3.9.16/Python-3.9.16.tar.xz',
-        sha256='22dddc099246dd2760665561e8adb7394ea0cc43a72684c6480f9380f7786439',  # noqa: E501
+    Version(3, 9, 17): Python(
+        url='https://www.python.org/ftp/python/3.9.17/Python-3.9.17.tar.xz',
+        sha256='30ce057c44f283f8ed93606ccbdb8d51dd526bdc4c62cce5e0dc217bfa3e8cee',  # noqa: E501
     ),
-    Version(3, 10, 9): Python(
-        url='https://www.python.org/ftp/python/3.10.9/Python-3.10.9.tar.xz',
-        sha256='5ae03e308260164baba39921fdb4dbf8e6d03d8235a939d4582b33f0b5e46a83',  # noqa: E501
+    Version(3, 10, 11): Python(
+        url='https://www.python.org/ftp/python/3.10.11/Python-3.10.11.tar.xz',
+        sha256='3c3bc3048303721c904a03eb8326b631e921f11cc3be2988456a42f115daf04c',  # noqa: E501
     ),
-    Version(3, 11, 1): Python(
-        url='https://www.python.org/ftp/python/3.11.1/Python-3.11.1.tar.xz',
-        sha256='85879192f2cffd56cb16c092905949ebf3e5e394b7f764723529637901dfb58f',  # noqa: E501
+    Version(3, 11, 3): Python(
+        url='https://www.python.org/ftp/python/3.11.3/Python-3.11.3.tar.xz',
+        sha256='8a5db99c961a7ecf27c75956189c9602c968751f11dbeae2b900dbff1c085b5e',  # noqa: E501
     ),
 }
 # end generated
