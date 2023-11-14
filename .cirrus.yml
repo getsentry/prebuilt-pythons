@@ -3,7 +3,7 @@ task:
   - arm_container:
       image: ghcr.io/getsentry/prebuilt-pythons-manylinux-arm64-ci
   - macos_instance:
-      image: ghcr.io/cirruslabs/macos-monterey-base:latest
+      image: ghcr.io/cirruslabs/macos-sonoma-base:latest
   env:
     matrix:
     - {PY: 3.8.17, BUILD: '0'}
